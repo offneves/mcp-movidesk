@@ -36,6 +36,11 @@ Ele utiliza **Playwright** para navegar e extrair dados da interface web do Movi
     ```
     Isso gerará os arquivos JavaScript na pasta `dist/`.
 
+4. **Rodar o projeto via terminal**:
+    ```bash
+    npm run start
+    ```
+
 ## Configuração no Windsurf / Cursor / Claude Desktop
 
 Para usar este servidor em um cliente MCP, adicione a configuração ao seu arquivo de configuração (ex: `mcp_config.json`, `mcp.json`  ou `claude_desktop_config.json`).
@@ -93,7 +98,6 @@ Para isolar o ambiente e garantir que todas as dependências do Playwright estej
 
 3. **Testar o container manualmente**:
     ```bash
-    # Para ver se o servidor inicia corretamente no Docker
     docker run -i --rm mcp-movidesk
     ```
 
