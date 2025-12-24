@@ -5,34 +5,39 @@ export function formatTicketMarkdown(ticket: MovideskTicket): string {
         ? ticket.description.substring(0, 200) + "..."
         : ticket.description;
 
-    return `# 🎫 Ticket Movidesk – ${ticket.id}
+    return `# Ticket Movidesk – ${ticket.id}
+## ${ticket.title}
 
-## 🧾 Resumo Executivo
+## Resumo Executivo
 ${shortDesc}
 
-## 🏷️ Informações Gerais
+## Informações Gerais
 - **Status:** ${ticket.status}
-- **Prioridade:** ${ticket.priority}
-- **Cliente:** ${ticket.client}
-- **Solicitante:** ${ticket.requester}
+- **Categoria:** ${ticket.category}
+- **Urgência:** ${ticket.urgency}
+- **Cliente:** ${ticket.client.join(", ")}
 - **SLA:** ${ticket.sla}
 
-## 📝 Descrição Original
+## Descrição Original
 ${ticket.description}
 
-## 💬 Histórico de Interações
+## Histórico de Interações
 ${ticket.history.length > 0 ? ticket.history.map(formatInteraction).join("\n") : "_Nenhuma interação registrada._"}
 
-## 🧠 Contexto Técnico Importante
+## Contexto Técnico Importante
 - Extracted at: ${new Date().toISOString()}
 
-## 🔍 Estado Atual do Ticket
+## Estado Atual do Ticket
 Status: ${ticket.status}.
 `;
 }
 
 function formatInteraction(interaction: TicketInteraction): string {
+    const imagesMd = interaction.images && interaction.images.length > 0
+        ? "\n" + interaction.images.map(img => `![Anexo](${img})`).join("\n")
+        : "";
+
     return `### ${interaction.date} - ${interaction.author}
-${interaction.message}
+${interaction.message}${imagesMd}
 `;
 }

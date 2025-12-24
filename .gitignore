@@ -1,26 +1,45 @@
-# Node.js
+# Dependencies
 node_modules/
-dist/
+/dist
+
+# Logs
+logs
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+lerna-debug.log*
 
-# Playwright
-/playwright-report/
-/test-results/
-playwright/storageState.json
-/playwright/.cache/
-
-# OS
+# OS Files
 .DS_Store
+.DS_Store?
+._*
 Thumbs.db
+ehthumbs.db
+Desktop.ini
 
-# Env
+# Playwright & Testing
+/playwright-report
+/test-results
+/playwright/.last-run.json
+/playwright/storageState.json
+/playwright/login-failure.png
+playwright/
+
+# TypeScript
+*.tsbuildinfo
+
+# Environment & Config
 .env
+.env.*
+!.env.example
+mcp_config.json
 
-# Editor
+# Editors
 .vscode/
 .idea/
-
-# MCP
-mcp_config.json
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

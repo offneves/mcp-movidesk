@@ -1,18 +1,13 @@
 import { MovideskSession } from "../movidesk/session.js";
 import { login } from "../movidesk/login.js";
+import { GetTicketContextArgs } from "../types/GetTicketContext.js";
 import { scrapeTicket } from "../movidesk/ticketScraper.js";
 import { formatTicketMarkdown } from "../templates/ticketMarkdown.js";
 
-export interface GetTicketContextArgs {
-    baseUrl: string;
-    username: string;
-    password: string;
-    ticketId?: string;
-    ticketUrl?: string;
-}
-
 export async function getTicketContext(args: GetTicketContextArgs): Promise<string> {
+
     const session = new MovideskSession();
+    
     try {
         const page = await login(session, {
             baseUrl: args.baseUrl,

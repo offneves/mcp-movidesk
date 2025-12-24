@@ -1,10 +1,10 @@
 export interface MovideskTicket {
     id: string;
     title: string;
-    status: string;
-    priority: string;
-    client: string;
-    requester: string;
+    client: string[];
+    status: string,
+    category: string,
+    urgency: string,
     sla: string;
     description: string;
     history: TicketInteraction[];
@@ -15,4 +15,5 @@ export interface TicketInteraction {
     date: string;
     author: string;
     message: string;
+    images?: string[];
 }

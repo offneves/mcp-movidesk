@@ -5,29 +5,30 @@ import path from "path";
 const STORAGE_STATE_PATH = path.join(process.cwd(), "playwright", "storageState.json");
 
 export class MovideskSession {
+    
     private browser: Browser | null = null;
     private context: BrowserContext | null = null;
 
-    async init(): Promise<BrowserContext> {
-        if (this.context) {
-            return this.context;
-        }
+    async init(ignoreState: boolean = false): Promise<BrowserContext> {
+        if (this.context) return this.context;
 
-        this.browser = await chromium.launch({
-            headless: true,
-        });
+        this.browser = await chromium.launch({ headless: true });
 
-        if (fs.existsSync(STORAGE_STATE_PATH)) {
-            try {
-                this.context = await this.browser.newContext({
-                    storageState: STORAGE_STATE_PATH,
-                });
+        const hasStoredState = fs.existsSync(STORAGE_STATE_PATH);
+        const shouldLoadState = !ignoreState && hasStoredState;
+
+        try {
+            this.context = await this.browser.newContext(
+                shouldLoadState ? { storageState: STORAGE_STATE_PATH } : {}
+            );
+            
+            if (shouldLoadState) {
                 console.error("Loaded existing session from storageState.json");
-            } catch (e) {
-                console.error("Failed to load storage state, creating new context", e);
-                this.context = await this.browser.newContext();
+            } else {
+                console.error(ignoreState ? "Clean session for validation" : "No existing session found");
             }
-        } else {
+        } catch (e) {
+            console.error("Failed to load storage state, falling back to new context", e);
             this.context = await this.browser.newContext();
         }
 
@@ -35,24 +36,19 @@ export class MovideskSession {
     }
 
     async saveState(): Promise<void> {
-        if (this.context) {
-            const dir = path.dirname(STORAGE_STATE_PATH);
-            if (!fs.existsSync(dir)) {
-                fs.mkdirSync(dir, { recursive: true });
-            }
-            await this.context.storageState({ path: STORAGE_STATE_PATH });
-            console.error("Session saved to storageState.json");
-        }
+        if (!this.context) return;
+
+        const dir = path.dirname(STORAGE_STATE_PATH);
+        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+
+        await this.context.storageState({ path: STORAGE_STATE_PATH });
+        console.error("Session state saved successfully.");
     }
 
     async close(): Promise<void> {
-        if (this.context) {
-            await this.context.close();
-            this.context = null;
-        }
-        if (this.browser) {
-            await this.browser.close();
-            this.browser = null;
-        }
+        await this.context?.close();
+        await this.browser?.close();
+        this.context = null;
+        this.browser = null;
     }
 }

@@ -1,45 +1,48 @@
-# Movidesk Ticket Context MCP Server 🎫
+# Movidesk Ticket Context MCP Server
 
-Este é um servidor [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) que permite que assistentes de IA (como Cascade/Windsurf) acessem detalhes técnicos de tickets do **Movidesk** diretamente no chat.
+O projeto propõe um servidor MCP [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) que permite que assistentes IA acessem detalhes técnicos de tickets do **Movidesk** diretamente no chat client.
 
 Ele utiliza **Playwright** para navegar e extrair dados da interface web do Movidesk, formatando-os em Markdown otimizado para análise por LLMs.
 
-## ✨ Funcionalidades
+## Funcionalidades
 
 - **Autenticação Automática**: Gerencia login e sessão persistente (via `storageState.json`) para evitar logins repetitivos.
 - **Busca de Tickets**: Busca por ID ou URL do ticket.
-- **Contexto Rico**: Retorna descrição, status, SLA, cliente e histórico completo de interações.
+- **Validação de Login**: Ferramenta dedicada para testar credenciais e URL base.
+- **Contexto Rico**: Retorna descrição, status, SLA, categoria, urgência, clientes e histórico completo de interações (incluindo imagens).
 - **Seguro**: Credenciais gerenciadas via variáveis de ambiente.
 
-## 🛠️ Pré-requisitos
+## Pré-requisitos
 
-- Node.js 18 ou superior.
+- Node.js 20 ou superior.
+- Docker (opcional, para execução via container).
 - Acesso a uma conta Movidesk (Usuário e Senha).
 
-## 🚀 Instalação e Build
+## Instalação e Build
 
-1.  **Clone o repositório** (se aplicável) ou navegue até a pasta:
+1. **Clone o repositório** (se aplicável) ou navegue até a pasta:
     ```bash
     cd /caminho/para/mcp-movidesk
     ```
 
-2.  **Instale as dependências**:
+2. **Instale as dependências**:
     ```bash
     npm install
     ```
-    Isso também instalará os navegadores do Playwright necessários.
 
-3.  **Compile o projeto**:
+3. **Compile o projeto**:
     ```bash
     npm run build
     ```
     Isso gerará os arquivos JavaScript na pasta `dist/`.
 
-## ⚙️ Configuração no Cascade / Windsurf
+## Configuração no Windsurf / Cursor / Claude Desktop
 
-Para usar este servidor no Windsurf ou qualquer cliente MCP, adicione a configuração ao seu arquivo `mcp_config.json`.
+Para usar este servidor em um cliente MCP, adicione a configuração ao seu arquivo de configuração (ex: `mcp_config.json`, `mcp.json`  ou `claude_desktop_config.json`).
 
 **Importante:** Você deve fornecer suas credenciais do Movidesk via variáveis de ambiente.
+
+### Execução Direta (Node.js)
 
 ```json
 {
@@ -50,25 +53,25 @@ Para usar este servidor no Windsurf ou qualquer cliente MCP, adicione a configur
       "env": {
         "MOVIDESK_BASE_URL": "https://sua-empresa.movidesk.com",
         "MOVIDESK_USERNAME": "seu-email@dominio.com",
-        "MOVIDESK_PASSWORD": "sua-senha-secreta"
+        "MOVIDESK_PASSWORD": "sua-senha"
       }
     }
   }
 }
 ```
 
-> 💡 **Nota:** Certifique-se de usar o caminho absoluto para o arquivo `dist/index.js`.
+> **Nota:** Certifique-se de usar o caminho absoluto para o arquivo `dist/index.js`.
 
-## 🐳 Executando com Docker
+### Execução via Docker (Recomendado para Isolamento)
 
-Para isolar o ambiente e evitar problemas de dependências do sistema, você pode usar Docker.
+Para isolar o ambiente e garantir que todas as dependências do Playwright estejam presentes sem sujar seu sistema host:
 
-1.  **Construir a imagem**:
+1. **Construir a imagem**:
     ```bash
-    docker build -t movidesk-mcp .
+    docker build -t mcp-movidesk .
     ```
 
-2.  **Configurar no `mcp_config.json`** para usar Docker:
+2. **Configurar no cliente MCP**:
     ```json
     {
       "mcpServers": {
@@ -81,41 +84,54 @@ Para isolar o ambiente e evitar problemas de dependências do sistema, você pod
             "-e", "MOVIDESK_BASE_URL=https://sua-empresa.movidesk.com",
             "-e", "MOVIDESK_USERNAME=seu-email@dominio.com",
             "-e", "MOVIDESK_PASSWORD=sua-senha",
-            "movidesk-mcp"
+            "mcp-movidesk"
           ]
         }
       }
     }
     ```
 
-## 🖥️ Desenvolvimento Local
+3. **Testar o container manualmente**:
+    ```bash
+    # Para ver se o servidor inicia corretamente no Docker
+    docker run -i --rm mcp-movidesk
+    ```
 
-Para testar localmente sem o Cascade, você pode rodar o servidor e verificar se ele inicia sem erros:
+## Ferramentas (Tools)
+
+### `get_movidesk_ticket_context`
+Extrai o contexto completo de um ticket (Metadados, Descrição e Histórico).
+- **Argumentos**: `ticketId` (string, opcional) ou `ticketUrl` (string, opcional).
+
+### `validate_movidesk_login`
+Valida se as credenciais e a URL base estão corretas sem realizar o scrap.
+- **Argumentos**: `baseUrl`, `username`, `password` (opcionais, usa env vars como fallback).
+
+## Desenvolvimento Local
+
+Para testar localmente sem um cliente MCP, você pode rodar:
 
 ```bash
-# Defina as variáveis primeiro
 export MOVIDESK_BASE_URL="https://..."
 export MOVIDESK_USERNAME="..."
 export MOVIDESK_PASSWORD="..."
 
-# Rode o servidor
-node dist/index.js
+npm start
 ```
-O servidor ficará aguardando comandos via STDIN (é o comportamento esperado do protocolo MCP).
 
-## 📝 Como a LLM usa?
+## Como a LLM usa?
 
-Uma vez configurado, você pode pedir ao Cascade:
+Uma vez configurado, você pode pedir ao assistente:
 
 > *"Verifique os detalhes do ticket 12345 no Movidesk e veja se tem relação com este código."*
 
-O Cascade chamará a tool `get_movidesk_ticket_context(ticketId: "12345")` e receberá um resumo detalhado como contexto.
+O assistente chamará a tool `get_movidesk_ticket_context(ticketId: "12345")`, receberá o contexto rico (incluindo links de imagens) e poderá analisar o problema com muito mais precisão.
 
-## ⚠️ Notas Técnicas
+## Notas Técnicas
 
 - **Seletores CSS**: O arquivo `src/movidesk/ticketScraper.ts` contém seletores baseados em estruturas comuns. É altamente provável que você precise ajustá-los inspecionando o DOM da sua instância específica do Movidesk (`#TicketTitle`, `#TicketStatus`, etc.), pois o Movidesk pode ter variações de layout.
-- **Headless**: O navegador roda em modo headless (sem interface gráfica) por padrão para ser rápido e silencioso.
+- **Headless**: O navegador roda em modo headless (sem interface gráfica) por padrão para ser rápido.
 
-## 📄 Licença
+## Licença
 
-ISC
+MIT
