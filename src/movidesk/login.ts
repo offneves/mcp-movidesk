@@ -1,6 +1,6 @@
 import { Page } from "playwright";
 import { MovideskSession } from "./session.js";
-import { LoginCredentials } from "../types/Login.js";
+import { LoginCredentials } from "../types/movidesk-login.js";
 
 const SELECTORS = {
     username: ".username-input-login-service",

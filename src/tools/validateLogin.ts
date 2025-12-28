@@ -1,6 +1,6 @@
 import { MovideskSession } from "../movidesk/session.js";
 import { login } from "../movidesk/login.js";
-import { LoginCredentials } from "../types/Login.js";
+import { LoginCredentials } from "../types/movidesk-login.js";
 
 export async function validateLogin(credentials: LoginCredentials): Promise<{ success: boolean; message: string }> {
 
