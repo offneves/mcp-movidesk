@@ -1,30 +1,29 @@
-# Estágio de Build
+# Build
 FROM node:20-bookworm AS builder
 
 WORKDIR /app
 
-# Instala dependências primeiro (otimiza cache do Docker)
+# Install dependencies
 COPY package*.json ./
 RUN npm install
 
-# Copia o código e compila
+# Copy code and compile
 COPY . .
 RUN npm run build
 
-# Estágio Final (Imagem de Produção)
+# Build Image
 FROM mcr.microsoft.com/playwright:v1.49.0-jammy
 
 WORKDIR /app
 
-# Copia as dependências e o código compilado do estágio anterior
+# Copy depencies and code
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/package.json ./package.json
 
-# O Playwright precisa de certas permissões e variáveis de ambiente
+# Playwright
 ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 ENV NODE_ENV=production
 
-# Como é um servidor MCP via STDIO, não precisamos de EXPOSE.
-# O comando padrão inicia o servidor.
+# Start server
 CMD ["node", "dist/index.js"]
