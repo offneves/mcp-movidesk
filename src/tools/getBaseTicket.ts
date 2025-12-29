@@ -4,12 +4,6 @@ import { scrapeTicket } from "../movidesk/ticketScraper.js";
 import { GetTicketContextArgs } from "../types/get-ticket-context.js";
 import { MovideskTicket } from "../types/movidesk-ticket.js";
 
-/**
- * Common logic to fetch ticket data and format it using a provided template.
- * @param args The credentials and ticket identifiers.
- * @param formatter A function that takes a MovideskTicket and returns a formatted string (Markdown).
- * @returns The formatted ticket content.
- */
 export async function fetchAndFormatTicket(
     args: GetTicketContextArgs, 
     formatter: (ticket: MovideskTicket) => string

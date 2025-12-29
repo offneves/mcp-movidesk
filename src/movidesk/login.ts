@@ -1,15 +1,7 @@
 import { Page } from "playwright";
 import { MovideskSession } from "./session.js";
 import { LoginCredentials } from "../types/movidesk-login.js";
-
-const SELECTORS = {
-    username: ".username-input-login-service",
-    password: ".password-input-login-service",
-    submit: "#btnSubmit",
-    errorAlert: ".alert-login-error-text",
-    successMarkers: ["#main-container", ".navbar"],
-    sessionModalSim: "text=SIM"
-};
+import { SELECTORS } from "../types/login-selectors.js";
 
 export async function login(session: MovideskSession, credentials: LoginCredentials): Promise<Page> {
 

@@ -8,7 +8,7 @@ export function formatTicketResumeMarkdown(ticket: MovideskTicket): string {
     return `# Ticket Movidesk – ${ticket.id}
 ## ${ticket.title}
 
-## Informações Gerais
+## Informações gerais
 - **Status:** ${ticket.status}
 - **Categoria:** ${ticket.category}
 - **Urgência:** ${ticket.urgency}
@@ -18,11 +18,11 @@ export function formatTicketResumeMarkdown(ticket: MovideskTicket): string {
 ## Resumo
 ${shortDesc}
 
-## Estado Atual do Ticket
+## Status atual do ticket
 Status: ${ticket.status}.
 
 ## Data dos dados
-- Extracted at: ${new Date().toISOString()}
+${new Date().toISOString()}
 `;
 }
 

@@ -8,27 +8,27 @@ export function formatTicketContextMarkdown(ticket: MovideskTicket): string {
     return `# Ticket Movidesk – ${ticket.id}
 ## ${ticket.title}
 
-## Resumo Executivo
+## Resumo
 ${shortDesc}
 
-## Informações Gerais
+## Informações gerais
 - **Status:** ${ticket.status}
 - **Categoria:** ${ticket.category}
 - **Urgência:** ${ticket.urgency}
 - **Cliente:** ${ticket.client.join(", ")}
 - **SLA:** ${ticket.sla}
 
-## Descrição Original
+## Descrição original
 ${ticket.description}
 
-## Histórico de Interações
+## Histórico
 ${ticket.history.length > 0 ? ticket.history.map(formatInteraction).join("\n") : "_Nenhuma interação registrada._"}
 
 ## Status atual do ticket
 Status: ${ticket.status}.
 
 ## Data dos dados
-- Extracted at: ${new Date().toISOString()}
+${new Date().toISOString()}
 
 `;
 }
